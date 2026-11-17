@@ -72,7 +72,7 @@ async function etat(pseudo) {
 
     // Branches de l'élève pour cette issue
     const branches = (await tout('/branches')).map((b) => b.name);
-    e.branchesMalNommees = branches.filter((b) => new RegExp(`(^|/|-)${n}(-|$)`).test(b) && !b.startsWith(`feature/${n}-`));
+    e.branchesMalNommees = branches.filter((b) => new RegExp(`(^|[/_-])${n}([/_-]|$)`).test(b) && !b.startsWith(`feature/${n}-`));
     e.branche = branches.find((b) => new RegExp(`^feature/${n}-[a-z0-9]+(-[a-z0-9]+)*$`).test(b)) || null;
     e.brancheInvalide = branches.find((b) => b.startsWith(`feature/${n}-`) && b !== e.branche) || null;
 
@@ -360,6 +360,8 @@ async function main() {
     const acteur = min(env.ACTEUR);
     if (!acteur || acteur.endsWith('[bot]')) return;
     const eleve = (login) => min(login) !== PROPRIO;
+    // Attribution des relecteurs : job séparé, une seule à la fois sur tout le dépôt
+    if (env.MODE === 'relecteurs') { await attribuerRelecteurs(); return; }
 
     switch (NOM_EVT) {
     case 'issues': {
@@ -378,7 +380,6 @@ async function main() {
     }
     case 'pull_request_target': {
         const p = EVT.pull_request;
-        if (['opened', 'reopened', 'ready_for_review'].includes(EVT.action)) await attribuerRelecteurs();
         if (eleve(p.user.login)) await repondre(min(p.user.login), { aideSi: EVT.action === 'closed' ? [8] : [4] });
         break;
     }

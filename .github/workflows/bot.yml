@@ -20,12 +20,35 @@ permissions:
   pull-requests: write
   actions: read
 
-# Une seule réponse à la fois, pour que deux élèves ne reçoivent pas le même relecteur
-concurrency:
-  group: bot
-  cancel-in-progress: false
-
 jobs:
+  # Attribution des relecteurs : une seule à la fois sur tout le dépôt.
+  # Une exécution en attente peut être annulée par une plus récente : sans risque, chacune relit tout l'état.
+  relecteurs:
+    name: Attribuer les relecteurs
+    if: github.event_name == 'pull_request_target' && contains(fromJSON('["opened","reopened","ready_for_review"]'), github.event.action)
+    concurrency:
+      group: relecteurs
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          sparse-checkout: .github/bot
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+      - name: Attribuer
+        env:
+          MODE: relecteurs
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PROPRIO: ${{ github.repository_owner }}
+          EVENEMENT: ${{ github.event_name }}
+          ACTEUR: ${{ github.actor }}
+        run: node .github/bot/bot.js
+
+  # Réponses : pas de file commune, pour qu'aucune réponse ne soit annulée
   bot:
     name: Bot travail en équipe
     if: github.actor != 'github-actions[bot]'
