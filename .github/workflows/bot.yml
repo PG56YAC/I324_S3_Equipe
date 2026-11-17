@@ -1,0 +1,48 @@
+name: Bot
+
+# Répond aux élèves dans leur issue, à chaque étape du travail en équipe.
+on:
+  issues:
+    types: [assigned, opened]
+  push:
+    branches-ignore: [main]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+  pull_request_target:
+    types: [opened, reopened, edited, ready_for_review, closed]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  actions: read
+
+# Une seule réponse à la fois, pour que deux élèves ne reçoivent pas le même relecteur
+concurrency:
+  group: bot
+  cancel-in-progress: false
+
+jobs:
+  bot:
+    name: Bot travail en équipe
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          sparse-checkout: .github/bot
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+      - name: Répondre
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PROPRIO: ${{ github.repository_owner }}
+          EVENEMENT: ${{ github.event_name }}
+          ACTEUR: ${{ github.event.workflow_run.actor.login || github.actor }}
+        run: node .github/bot/bot.js
