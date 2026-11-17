@@ -13,6 +13,10 @@ on:
     types: [opened, reopened, edited, ready_for_review, closed]
   pull_request_review:
     types: [submitted]
+  # Rattrapage : GitHub ne déclenche rien sur les revues d'une PR en conflit
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
