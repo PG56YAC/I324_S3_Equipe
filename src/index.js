@@ -7,6 +7,7 @@ const getLongestItem = require('./routes/getLongestItem');
 const addItem = require('./routes/addItem');
 const updateItem = require('./routes/updateItem');
 const deleteItem = require('./routes/deleteItem');
+const copyItem = require('./routes/copyItem');
 const existItem = require('./routes/existItem')
 
 app.use(express.json());
@@ -17,6 +18,7 @@ app.get('/api/longest', getLongestItem);
 app.post('/items', addItem);
 app.put('/items/:id', updateItem);
 app.delete('/items/:id', deleteItem);
+app.post('/api/items/:id/copy', copyItem);
 app.get('/api/exists', existItem)
 
 db.init().then(() => {
