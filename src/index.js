@@ -6,10 +6,12 @@ const getItems = require('./routes/getItems');
 const addItem = require('./routes/addItem');
 const updateItem = require('./routes/updateItem');
 const deleteItem = require('./routes/deleteItem');
+const countDoneItems = require('./routes/countDoneItems');
 
 app.use(express.json());
 app.use(express.static(__dirname + '/static'));
 
+app.get('/count-done', countDoneItems)
 app.get('/items', getItems);
 app.post('/items', addItem);
 app.put('/items/:id', updateItem);
