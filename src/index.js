@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.static(__dirname + '/static'));
 
 app.get('/items', getItems);
-app.get('/items/longest', getLongestItem);
+app.get('/api/longest', getLongestItem);
 app.post('/items', addItem);
 app.put('/items/:id', updateItem);
 app.delete('/items/:id', deleteItem);
