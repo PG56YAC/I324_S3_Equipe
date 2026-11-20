@@ -15,7 +15,7 @@ app.get('/items', getItems);
 app.post('/items', addItem);
 app.put('/items/:id', updateItem);
 app.delete('/items/:id', deleteItem);
-app.get('/items/number', getfirstitems);
+app.get('/first/number', getfirstitems);
 
 db.init().then(() => {
     app.listen(3000, () => console.log('Listening on port 3000'));
