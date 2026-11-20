@@ -1,5 +1,4 @@
 // Duplique une tâche existante
-// avec un nouveau id
 const db = require('../persistence');
 const { v4: uuid } = require('uuid');
 const defaults = require('../defaults');
