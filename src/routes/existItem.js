@@ -2,7 +2,7 @@ const db = require('../persistence');
 
 module.exports = async (req, res) => {
     const items = db.getItems().map(item => item.name);
-    const name = req.query.name
-    const existing = items.some((nom) => nom.toLowerCase() === name);
+    const nameQuery = req.query.name
+    const existing = items.some((name) => name.toLowerCase() === nameQuery.toLowerCase());
     res.send(existing);
 };
