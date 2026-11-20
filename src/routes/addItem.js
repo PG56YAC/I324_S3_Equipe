@@ -1,21 +1,22 @@
-// Ajoute une tâche
+// Duplique une tâche existante
 const db = require('../persistence');
 const { v4: uuid } = require('uuid');
 const defaults = require('../defaults');
-const { nomValide } = require('../validation');
 
 module.exports = async (req, res) => {
-    if (!nomValide(req.body.name)) {
-        res.status(400).send({ erreur: 'Le nom de la tâche est vide ou trop long.' });
+    const original = await db.getItem(req.params.id);
+
+    if (!original) {
+        res.status(404).send({ erreur: 'Tâche introuvable.' });
         return;
     }
 
-    const nouvelleTache = {
+    const copie = {
         id: uuid(),
-        name: req.body.name.trim(),
+        name: `${original.name} (copie)`,
         completed: defaults.completed,
     };
 
-    await db.storeItem(nouvelleTache);
-    res.send(nouvelleTache);
+    await db.storeItem(copie);
+    res.send(copie);
 };
