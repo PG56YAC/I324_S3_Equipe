@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(express.static(__dirname + '/static'));
 
 app.get('/items', getItems);
+app.get('/items/longest', getItems);
 app.post('/items', addItem);
 app.put('/items/:id', updateItem);
 app.delete('/items/:id', deleteItem);
